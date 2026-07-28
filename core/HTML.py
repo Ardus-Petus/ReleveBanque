@@ -4,7 +4,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from ReleveBanque.utils import chrome
 os.environ['WDM_LOCAL'] = '0'
 os.environ['WDM_SSL_VERIFY'] = '0'
-from typing import Callable
 
 class HTML:
     def __init__(self, url:str):

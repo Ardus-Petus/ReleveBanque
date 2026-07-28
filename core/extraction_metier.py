@@ -1,7 +1,6 @@
 # extraction_metier.py
 from decimal import Decimal
 import locale
-from typing import Callable
 
 class ManqueHistorique(Exception):
     pass
@@ -14,7 +13,7 @@ class ExtractionMetier:
         self.oHTML = None
         self.oXL = None
 
-    def run(self, callback:Callable[[str, str], None]):
+    def run(self, callback=None):
         def _cb(msgtype, value):
             if callback:
                 callback(msgtype, value)
