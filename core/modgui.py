@@ -116,7 +116,7 @@ class gui:
 
         for name, text, percent, min_width, stretch, anchor in self.columns:
             self.tree.heading(name, text=text)
-            self.tree.column(name, width=min_width, stretch=stretch, anchor=anchor)
+            self.tree.column(name, width=min_width, stretch=stretch, anchor=anchor) # pyright: ignore[reportArgumentType]
 
         self.tree.pack(fill="both", expand=True, anchor='n', padx=10, pady=10)
         self.tree.bind("<Configure>", self.resize_columns)

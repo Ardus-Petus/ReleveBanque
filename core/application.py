@@ -31,7 +31,7 @@ class Application:
         metier = ExtractionMetier(self.mod_XL, self.mod_HTML, self.tabexcl)
 
         try:
-            metier.run(callback=self.putGUI, testQueue=self.testQueue)
+            metier.run(callback=self.putGUI)
         except Exception as err:
             with open('.\\ftrace.txt', 'w') as dump:
                 dump.write(traceback.format_exc())
@@ -59,7 +59,6 @@ class Application:
         elif msg_type == "obj":
             oXL = payload
             hwnd_excel = oXL.hwnd
-            winmgt.restore(hwnd_excel)
             self.geometry.pos_right(hwnd_excel)
             self.gui_queue.put((msg_type, payload))
             
@@ -67,14 +66,4 @@ class Application:
             # transmettre directement au GUI
             self.gui_queue.put((msg_type, payload))
 
-    def testQueue(self):
-        """Surveillance du bouton Stop du GUI."""
-        try:
-            while True:
-                msg_type, _ = self.metier_queue.get_nowait()
-                if msg_type == "stop":
-                    raise Exception("Abandon")
-
-        except queue.Empty:
-            pass                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-
+ 
