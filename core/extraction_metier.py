@@ -1,6 +1,7 @@
 # extraction_metier.py
 from decimal import Decimal
 import locale
+from typing import Callable
 
 class ManqueHistorique(Exception):
     pass
@@ -13,7 +14,7 @@ class ExtractionMetier:
         self.oHTML = None
         self.oXL = None
 
-    def run(self, callback=None, testQueue=lambda: None):
+    def run(self, callback:Callable[[str, str], None]):
         def _cb(msgtype, value):
             if callback:
                 callback(msgtype, value)
@@ -32,7 +33,7 @@ class ExtractionMetier:
 
             
         # Ouverture HTML (une seule fois)
-        self.oHTML = self.mod_HTML(testQueue)
+        self.oHTML = self.mod_HTML()
 
         # Signaler au GUI que HTML est ouvert (pour positionnement fenêtre)
         _cb("html_opened", self.oHTML.proc.pid)
@@ -66,7 +67,6 @@ class ExtractionMetier:
 
         # Ignorer les opérations exclues
         while True:
-            testQueue()
             ope = self.oHTML.getHTMLOpe(idxHTML)
             if ope.lib in self.tabexcl:
                 _trace_ope(ope, "exclue ")
@@ -78,7 +78,6 @@ class ExtractionMetier:
         # Empiler les opérations HTML jusqu’à lastope ou EOF
         operations = []
         while not (ope == lastope or ope.isEOF()):
-            testQueue()
             _trace_ope(ope)
             operations.append(ope)
             idxHTML += 1
@@ -100,7 +99,6 @@ class ExtractionMetier:
         row = lastrow + 1
         tot_ope = Decimal(0)
         while operations:
-            testQueue()
             ope = operations.pop()
             oXL.StoreOpe(ope)
             tot_ope += Decimal(ope.montant)
