@@ -98,7 +98,7 @@ class gui:
         style.theme_use("clam")
         style.configure("MonStyle.Treeview", rowheight=row_h)
 
-        bloc_tree = MLFrame(root, text="Nouvelles opérations bancaires détectées")
+        bloc_tree = MLFrame(root, text="Opérations bancaires détectées")
      
         self.columns = [
             ('status',  'Status',   0.10, int(80*self.ratio),     False,  'center'),
@@ -127,24 +127,12 @@ class gui:
         frame_buttons = tk.Frame(bloc_buttons)
         frame_buttons.pack(padx=10, pady=10)
  
-        # bouton Abandon
-        self.btn_abandon = tk.Button(
-            frame_buttons,
-            width=20,   # largeur en caractères, pas en pixels
-            text="Abandon",
-            state='active',
-            background=GREY,
-            font=fontBold,
-            command=self.abandon
-        )
-        self.btn_abandon.pack(side='left',padx=5, pady=5, anchor='center')
-
-        # bouton Abandon
+        # bouton Fermeture
         self.btn_close = tk.Button(
             frame_buttons,
             width=20,   # largeur en caractères, pas en pixels
             text="Fermeture",
-            state='disabled',
+            state='normal',
             background=GREY,
             font=fontBold,
             command=self.close
@@ -164,17 +152,11 @@ class gui:
             name, text, percent, min_width, stretch, anchor = row
             self.tree.column(name, width=max(int(width_total * percent), min_width))
     
-    def abandon(self) -> None:
-        self.metier_queue.put(("stop", None))            # Envoie un signal d'arret au Métier
-        #self.root.destroy()                         # Sort de la boucle root.mainloop()
-
     def close(self) -> None:
         self.root.destroy()
 
     def traitement_erreur(self, entry:tk.Entry):
         entry.configure(background=PINK)
-        self.btn_abandon.configure(state='disabled')
-        self.btn_close.configure(state='normal')
 
 # ============================================================
 # GUI update loop
@@ -205,8 +187,6 @@ def gui_update(gui: gui, root: tk.Tk):
                 gui.oXL = payload
             
             elif msg_type == "fnorm":       # Fin normale de la moulinette
-                gui.btn_abandon.configure(state='disabled')
-                gui.btn_close.configure(state='active')
                 gui.voir_Excel=True
                
             else:
