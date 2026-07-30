@@ -184,7 +184,7 @@ def gui_update(g: gui, root: tk.Tk):
                 g.tree.insert("", "end", values=payload) # payload est un tuple
                 g.tree.yview_moveto(1)  # On scroll vers le bas pour voir la dernière ligne ajoutée
             
-            elif msg_type == "obj":
+            elif msg_type == "XL":
                 g.oXL = payload
 
             elif msg_type == 'HTML':

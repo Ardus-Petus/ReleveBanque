@@ -19,7 +19,7 @@ class ExcelWindowManager:
             app = win32.Dispatch("Excel.Application")
             return app, False  # ✔️ Excel vient d'être créé
 
-     # ---------------------------------------------------------     
+    # ---------------------------------------------------------     
     # Maximiser la fenêtre
     # ---------------------------------------------------------     
     def maximize(self)-> None: 

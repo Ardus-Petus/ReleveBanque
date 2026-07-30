@@ -2,6 +2,7 @@ import json
 import win32com.client as win32  # installé par pip install pywin32
 import os.path
 from ReleveBanque.utils.ExcelWindowManager import ExcelWindowManager
+from ReleveBanque.core.Ope import Ope
 
 class TablibError(Exception):
     pass
@@ -118,6 +119,16 @@ class Excel:
         ret = self.listRows.Add()
         return ret.Range
 
-    def getXLOpe(self, row) -> XLOpe:
-        """Retourne un objet XLOpe représentant l'opération bancaire dans la ligne Excel spécifiée."""                                                                  
+    def getXLOpe(self, row) -> Ope:
+        """Retourne un objet Ope représentant l'opération bancaire dans la ligne Excel spécifiée."""                                                                  
         return self.XLOpe(self.getRow(row))
+
+    # Membres définis dans une classe dérivée
+    #----------------------------------------
+    def getlistRows(self) -> win32.CDispatch:
+        raise NotImplementedError
+
+    def XLOpe(self, range:win32.CDispatch)->Ope:
+        raise NotImplementedError
+    
+    

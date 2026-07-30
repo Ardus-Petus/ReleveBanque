@@ -36,11 +36,12 @@ class ExtractionMetier:
 
         # Signaler au GUI que HTML est ouvert (pour positionnement fenêtre)
         _cb("html_opened", self.oHTML.proc.pid)
-        _cb("HTML", self.oHTML)
+        _cb("HTML", self.oHTML) # Pour communiquer l'objet
 
         # Attente connexion + relevé
         _tr("Attente de la connexion au site...")
         self.oHTML.waitForCnxComptes()
+
         _tr("Attente du choix du compte...")
         self.oHTML.waitForRelevé()
 
@@ -50,9 +51,10 @@ class ExtractionMetier:
         # Ouverture Excel
         _tr("Ouverture classeur Excel")
         oXL = self.mod_XL(acctNo)
+        _cb("XL_opened", oXL)   # pour que l’UI positionne la fenêtre Excel
+        _cb("XL", oXL)  # Pour communiquer l'objet
         _cb("Excel", oXL.getStatusString())
-        _cb("obj", oXL)  # pour que l’UI positionne la fenêtre Excel
-
+    
         # Recherche dernière opération Excel
         lastrow = oXL.getLastRow()
         try:

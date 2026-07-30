@@ -56,11 +56,10 @@ class Application:
             winmgt.focus(hwnd_html)
             return
 
-        elif msg_type == "obj":
+        elif msg_type == "XL_opened":
             oXL = payload
             hwnd_excel = oXL.hwnd
             self.geometry.pos_right(hwnd_excel)
-            self.gui_queue.put((msg_type, payload))
             
         else:       
             # transmettre directement au GUI

@@ -14,7 +14,7 @@ class HTML:
             
     def quit(self) -> None:
         """Ferme proprement Selenium et le processus Chrome associé."""
-        self.driver.quit()
+        #self.driver.quit()
         self.proc.terminate()
         self.proc.wait()
 
