@@ -49,9 +49,6 @@ class Excel:
             else:
                 self.WB = self.Appli.Workbooks.Add(modelpath)  # Crée un nouveau classeur à partir du modèle
                 self.status = Excel.NEW
-                # On crée un fichier tablib vide pour le compte
-                with open(rep + acct + '.tablib', mode='w') as lib: 
-                    lib.write('[]')
 
         # On active le classeur et on récupère le handle de la fenêtre Excel
         self.WB.Activate()
@@ -73,11 +70,11 @@ class Excel:
         self.listRows = self.getlistRows()  # Traité par HTML_LBP
 
         # On charge le fichier tablib pour le compte
-        with open(rep + acct + '.tablib', mode='r') as file:
-            try:
+        try:
+            with open(rep + acct + '.tablib', mode='r') as file:
                 self.tablib = json.loads(file.read())
-            except:
-                raise TablibError('Erreur dans tablib')
+        except FileNotFoundError:
+            self.tablib = []
         # Finalement, on retourne l'objet Excel initialisé
     
     #---------------------------------------------------------
