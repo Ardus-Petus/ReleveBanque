@@ -25,16 +25,17 @@ class MLFrame(tk.Frame):
 
 class gui:
     def __init__(self, root, gui_queue, metier_queue, geo):
-        #root.tk.call('tk', 'scaling', 1.5)
-        scaling = float(root.tk.call('tk', 'scaling'))
-        row_h = int(12 * scaling)   # 12 = hauteur "normale" de base
-        root.title("Extraction des opérations bancaires")
         self.root=root
         self.geometry = geo
         self.metier_queue = metier_queue
         self.gui_queue = gui_queue
         self.oXL = None
-        self.voir_Excel = False
+        self.oHTML = None
+        self.voir_Excel:bool = False
+        #root.tk.call('tk', 'scaling', 1.5)
+        scaling = float(root.tk.call('tk', 'scaling'))
+        row_h = int(12 * scaling)   # 12 = hauteur "normale" de base
+        root.title("Extraction des opérations bancaires")
         W = root.winfo_screenwidth()
         H = root.winfo_screenheight()
         self.ratio = W/1920
@@ -162,41 +163,44 @@ class gui:
 # GUI update loop
 # ============================================================
 
-def gui_update(gui: gui, root: tk.Tk):
+def gui_update(g: gui, root: tk.Tk):
     # entry = gui.dict_champs["Erreur"]
     # entry.delete(0, 'end')
     # entry.insert(0, root.geometry())
     try:
         while True:
-            msg_type, payload = gui.gui_queue.get_nowait()
+            msg_type, payload = g.gui_queue.get_nowait()
 
             if msg_type == 'resize':
-                gui.geometry.pos_left(winmgt.getParentHwnd(root.winfo_id()))
+                g.geometry.pos_left(winmgt.getParentHwnd(root.winfo_id()))
                 root.update()
                 pass
 
             elif msg_type == "log":
-                gui.log.insert("end", payload)
-                gui.log.see("end")
+                g.log.insert("end", payload)
+                g.log.see("end")
 
             elif msg_type == "row":
-                gui.tree.insert("", "end", values=payload) # payload est un tuple
-                gui.tree.yview_moveto(1)  # On scroll vers le bas pour voir la dernière ligne ajoutée
+                g.tree.insert("", "end", values=payload) # payload est un tuple
+                g.tree.yview_moveto(1)  # On scroll vers le bas pour voir la dernière ligne ajoutée
             
             elif msg_type == "obj":
-                gui.oXL = payload
+                g.oXL = payload
+
+            elif msg_type == 'HTML':
+                g.oHTML = payload
             
             elif msg_type == "fnorm":       # Fin normale de la moulinette
-                gui.voir_Excel=True
+                g.voir_Excel=True
                
             else:
-                entry = gui.dict_champs[msg_type]
+                entry = g.dict_champs[msg_type]
                 entry.delete(0, 'end')
                 entry.insert(0, payload)
                 if msg_type == "Erreur":
-                    gui.traitement_erreur(entry)
+                    g.traitement_erreur(entry)
                     
     except queue.Empty:
         pass
 
-    root.after(100, gui_update, gui, root) # On relance la procédure après 100 msec.
+    root.after(100, gui_update, g, root) # On relance la procédure après 100 msec.

@@ -32,7 +32,9 @@ class Lanceur:
         root.after(100, gui_update, mygui, root)
         root.mainloop()
 
-        # maximisation de la fenêtre Excel
+        if mygui.oHTML:
+            mygui.oHTML.quit()
+
         if mygui.oXL:
             mygui.oXL.mgr.maximize()
 

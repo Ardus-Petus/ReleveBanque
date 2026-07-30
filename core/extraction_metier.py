@@ -31,11 +31,12 @@ class ExtractionMetier:
                 )
 
             
-        # Ouverture HTML (une seule fois)
+        # Ouverture HTML
         self.oHTML = self.mod_HTML()
 
         # Signaler au GUI que HTML est ouvert (pour positionnement fenêtre)
         _cb("html_opened", self.oHTML.proc.pid)
+        _cb("HTML", self.oHTML)
 
         # Attente connexion + relevé
         _tr("Attente de la connexion au site...")
