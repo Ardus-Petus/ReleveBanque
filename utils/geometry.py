@@ -10,7 +10,7 @@ class Geometry:
         self.mid_x = self.screen_width * 1 // 2
         self.mid_w = self.screen_width - self.mid_x
         self.margin = 0
-        self.bordure = 10
+        self.bordure = 0
 
     def pos_right(self, hwnd: int):
         # winmgt.maximize(hwnd)
