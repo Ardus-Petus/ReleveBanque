@@ -32,6 +32,7 @@ class Excel:
         self.Appli = self.mgr.appli           # On récupère l'instance Excel 
                 
         self.Appli.Visible = True
+        self.Appli.WindowState = -4143      # xlNormal
 
         # On récupère la liste des classeurs ouverts 
         # et on vérifie si le classeur pour le compte existe déjà
