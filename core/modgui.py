@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from tkinter import ttk
 import tkinter.font as tkfont
@@ -9,7 +10,6 @@ from ReleveBanque.utils import winmgt
 # ============================================================
 PINK = "#FFAED0"
 GREY = "#B5B5B5"
-import tkinter.font as tkfont
 
 class MLFrame(tk.Frame):
 
@@ -24,7 +24,7 @@ class MLFrame(tk.Frame):
         self.content.pack(fill="both", expand=True)
 
 class gui:
-    def __init__(self, root, gui_queue, metier_queue, geo):
+    def __init__(self, root:tk.Tk, gui_queue, metier_queue, geo):
         self.root=root
         self.geometry = geo
         self.metier_queue = metier_queue
@@ -36,6 +36,7 @@ class gui:
         scaling = float(root.tk.call('tk', 'scaling'))
         row_h = int(12 * scaling)   # 12 = hauteur "normale" de base
         root.title("Extraction des opérations bancaires")
+        if os.path.exists('moulinette.ico'): root.iconbitmap('moulinette.ico')
         W = root.winfo_screenwidth()
         H = root.winfo_screenheight()
         self.ratio = W/1920
