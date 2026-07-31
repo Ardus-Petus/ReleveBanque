@@ -3,16 +3,16 @@ import win32com.client as win32  # installé par pip install pywin32
 import os.path
 from ReleveBanque.utils.ExcelWindowManager import ExcelWindowManager
 from ReleveBanque.core.Ope import Ope
+from abc import ABC, abstractmethod
 
 class TablibError(Exception):
     pass
 
-
-class Excel:
+class Excel(ABC):
     """Classe pour gérer les opérations bancaires dans un fichier Excel."""
     EXIST, OPEN, NEW = range(3) 
      
-    def __init__(self, acct:str, rep:str, worksheetname:str, modelpath:str):
+    def __init__(self, acct:str, rep:str='', worksheetname:str='', modelpath:str=''):
         """Initialise l'objet COM Excel et affiche le classeur pour un compte donné.
         Args:
             acct (str): Le nom du compte bancaire.
@@ -123,10 +123,27 @@ class Excel:
 
     # Membres définis dans une classe dérivée
     #----------------------------------------
+    @abstractmethod
     def getlistRows(self) -> win32.CDispatch:
-        raise NotImplementedError
+        ...
 
+    @abstractmethod
+    def StoreOpe(self, ope:Ope) -> None:
+        ...
+
+    @abstractmethod
     def XLOpe(self, range:win32.CDispatch)->Ope:
-        raise NotImplementedError
+        ...
+
+    @property
+    @abstractmethod
+    def solde_initial(self) -> float:
+        ...
+
+    @solde_initial.setter
+    @abstractmethod
+    def solde_initial(self, value):
+        ...                                                                                                                                                    
+
     
     

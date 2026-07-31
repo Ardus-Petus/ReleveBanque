@@ -1,12 +1,15 @@
 # extraction_metier.py
 from decimal import Decimal
 import locale
+from typing import Type
+from ReleveBanque.core.Excel import Excel
+from ReleveBanque.core.HTML import HTML
 
 class ManqueHistorique(Exception):
     pass
 
 class ExtractionMetier:
-    def __init__(self, mod_XL, mod_HTML, tabexcl):
+    def __init__(self, mod_XL:Type[Excel], mod_HTML:Type[HTML], tabexcl):
         self.mod_XL = mod_XL
         self.mod_HTML = mod_HTML
         self.tabexcl = tabexcl
