@@ -1,13 +1,13 @@
 from dataclasses import dataclass
-from datetime import date
+from datetime import date as _date
 
 @dataclass
 class Ope:
-    date: date
+    date: _date
     lib: str
     montant: float
 
-    DATE_EOF = date(9999, 12, 31)
+    DATE_EOF = _date(9999, 12, 31)
 
     def __str__(self):
         return f"[{self.date.strftime('%d/%m/%Y')} / {self.lib[:50]:<50} / {self.montant}]"
