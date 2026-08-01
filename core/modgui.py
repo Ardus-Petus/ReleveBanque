@@ -35,7 +35,8 @@ class gui:
         #root.tk.call('tk', 'scaling', 1.5)
         scaling = float(root.tk.call('tk', 'scaling'))
         row_h = int(12 * scaling)   # 12 = hauteur "normale" de base
-        root.title("Extraction des opérations bancaires")
+        #root.title("Extraction des opérations bancaires")
+        root.title(__file__)
         if os.path.exists('moulinette.ico'): root.iconbitmap('moulinette.ico')
         W = root.winfo_screenwidth()
         H = root.winfo_screenheight()
