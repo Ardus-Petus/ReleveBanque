@@ -1,28 +1,28 @@
 # extraction_metier.py
 from decimal import Decimal
 import locale
-from typing import Type
+from typing import Type, Any, Callable
 from ReleveBanque.core.Excel import Excel
 from ReleveBanque.core.HTML import HTML
+from Ope import Ope
 
 class ManqueHistorique(Exception):
     pass
 
 class ExtractionMetier:
-    def __init__(self, mod_XL:Type[Excel], mod_HTML:Type[HTML], tabexcl):
+    def __init__(self, mod_XL:Type[Excel], mod_HTML:Type[HTML], tabexcl:str):
         self.mod_XL = mod_XL
         self.mod_HTML = mod_HTML
         self.tabexcl = tabexcl
         self.oHTML = None
         self.oXL = None
 
-    def run(self, callback=None):
-        def _cb(msgtype, value):
-            if callback:
-                callback(msgtype, value)
-        def _tr(msg):
+    def run(self, callback: Callable[[str, Any], None]=lambda _, _: None):
+        def _cb(msgtype:str, value:Any):
+            callback(msgtype, value)
+        def _tr(msg:str):
             _cb("log", msg+'\n')
-        def _trace_ope(ope, inc_excl='incluse'):
+        def _trace_ope(ope:Ope, inc_excl:str='incluse'):
             _cb(
                     "row",
                     (
@@ -81,7 +81,7 @@ class ExtractionMetier:
                 break
 
         # Empiler les opérations HTML jusqu’à lastope ou EOF
-        operations = []
+        operations:list[Ope] = []
         while not (ope == lastope or ope.isEOF()):
             _trace_ope(ope)
             operations.append(ope)

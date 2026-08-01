@@ -11,13 +11,13 @@ class ExcelWindowManager:
     # ---------------------------------------------------------
     # Récupération instance Excel + indicateur
     # ---------------------------------------------------------
-    def _get_excel_instance(self):
+    def _get_excel_instance(self) -> tuple[win32.CDispatch, bool]:
         try:
-            app = win32.GetActiveObject("Excel.Application")
-            return app, True   # ✔️ Excel existait déjà
+            app: win32.CDispatch = win32.GetActiveObject("Excel.Application") # type: ignore
+            return app, True   # ✔️ Excel existait déjà #type: ignore
         except Exception:
-            app = win32.Dispatch("Excel.Application")
-            return app, False  # ✔️ Excel vient d'être créé
+            app: win32.CDispatch = win32.Dispatch("Excel.Application") #type: ignore
+            return app, False  # ✔️ Excel vient d'être créé             
 
     # ---------------------------------------------------------     
     # Maximiser la fenêtre

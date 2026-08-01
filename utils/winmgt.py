@@ -18,14 +18,14 @@ def get_screen_size() -> tuple[int, int]:
 def getCurrentHwnd() -> int:
     hwnd_potentiel = win32gui.GetForegroundWindow()
     jeton_unique = f"New_Window_{time.time()}"
-    win32gui.SetWindowText(hwnd_potentiel, jeton_unique)
+    win32gui.SetWindowText(hwnd_potentiel, jeton_unique) #type: ignore
     time.sleep(0.02)
     hwnd_console = win32gui.FindWindow(None, jeton_unique)
     return hwnd_console
 
 # Positionnement et redimensionnement de la fenêtre
 # ---------------------------------------------------------
-def setWindowPos(hwnd, x, y, w, h) -> None:
+def setWindowPos(hwnd: int, x: int, y: int, w: int, h: int) -> None:
     win32gui.SetWindowPos(
         hwnd, win32con.HWND_TOP, 
         x, y, w, h, 
@@ -44,9 +44,9 @@ def close_window(hwnd: int) -> None:
 # Récupérer le HWND d’un processus *
 # ---------------------------------------------------------
 def getChromeWindowFromPid(pid: int) -> int:
-    hwnds = []
+    hwnds:list[int] = []
 
-    def callback(hwnd, _):
+    def callback(hwnd: int, _):
         # Vérifie le PID
         _, found_pid = win32process.GetWindowThreadProcessId(hwnd)
         if found_pid != pid:
@@ -92,7 +92,7 @@ def restore(hwnd: int)-> None:
 def maximize(hwnd: int)-> None: 
     win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
 
-def focus(hwnd):
+def focus(hwnd: int) -> None:
     # Force la fenêtre à passer au premier plan
     # Source - https://stackoverflow.com/a/76386100
     # Posted by crxyz
@@ -103,6 +103,6 @@ def focus(hwnd):
     win32gui.SetForegroundWindow(hwnd)
     win32gui.BringWindowToTop(hwnd)
 
-def getParentHwnd(hwndTk):
+def getParentHwnd(hwndTk: int) -> int:
     # Récupération du a HWND parent
     return ctypes.windll.user32.GetParent(hwndTk)

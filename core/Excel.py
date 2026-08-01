@@ -18,15 +18,15 @@ class Excel(ABC):
             acct (str): Le nom du compte bancaire.
             rep (str): Le répertoire où se trouve le fichier Excel.
             worksheetname (str): Le nom de la feuille de calcul à utiliser.
-            modelpath (str): Le chemin vers le modèle Excel à utiliser pour créer un nouveau classeur."""
+          
+              modelpath (str): Le chemin vers le modèle Excel à utiliser pour créer un nouveau classeur."""
+        self.Appli: win32.CDispatch | None = None   # L'application Excel
         
-        self.WB = None      # Le classeur Excel
-        self.hwnd = None    # Le handle de la fenêtre Excel
-        self.WS = None      # La feuille de calcul Excel
-        self.Appli = None   # L'application Excel
+        self.WorkBook: win32.CDispatch | None = None      # Le classeur Excel
+        self.WorkSheet: win32.CDispatch | None = None      # La feuille de calcul Excel
 
-        wbname = acct + '.xlsx'             # Nom du classeur Excel pour le compte
-        self.nomfic = rep + wbname          # Chemin complet du fichier Excel pour le compte
+        WorkBookname = acct + '.xlsx'             # Nom du classeur Excel pour le compte
+        self.nomfic = rep + WorkBookname          # Chemin complet du fichier Excel pour le compte
  
         self.mgr = ExcelWindowManager()     # Active ou crée une instance d'Excel
         self.Appli = self.mgr.appli           # On récupère l'instance Excel 
@@ -36,35 +36,35 @@ class Excel(ABC):
 
         # On récupère la liste des classeurs ouverts 
         # et on vérifie si le classeur pour le compte existe déjà
-        wbks = self.Appli.Workbooks
-        openwbs= [w.Name for w in wbks]
-        if wbname in openwbs:
+        WorkBooks = self.Appli.Workbooks
+        openWorkBooks= [w.Name for w in WorkBooks]
+        if WorkBookname in openWorkBooks:
                                                     # Récupère le classeur déjà ouvert
-            self.WB = wbks[openwbs.index(wbname)]
+            self.WorkBook = WorkBooks[openWorkBooks.index(WorkBookname)]
             self.status = Excel.EXIST
         else:
             if os.path.exists(self.nomfic):
-                self.WB = self.Appli.Workbooks.Open(self.nomfic)    #Ouvre le classeur existant
+                self.WorkBook = self.Appli.Workbooks.Open(self.nomfic)    #Ouvre le classeur existant
                 self.status = Excel.OPEN
             else:
-                self.WB = self.Appli.Workbooks.Add(modelpath)  # Crée un nouveau classeur à partir du modèle
+                self.WorkBook = self.Appli.Workbooks.Add(modelpath)  # Crée un nouveau classeur à partir du modèle
                 self.status = Excel.NEW
 
         # On active le classeur et on récupère le handle de la fenêtre Excel
-        self.WB.Activate()
-        # self.hwnd = find_hwnd_by_workbook_name(wbname)  
+        self.WorkBook.Activate()
+        # self.hwnd = find_hwnd_by_workbook_name(WorkBookname)  
 
         # On récupère le hwnd à partir de la collection Windows du classeur
         # (on considère qu'il n'y a qu'une fenêtre)
-        self.hwnd = self.mgr.hwnd = self.WB.Windows[0].Hwnd
+        self.hwnd = self.mgr.hwnd = self.WorkBook.Windows[0].Hwnd
 
         # On récupère la feuille de calcul "Banque" du classeur
-        self.WS = self.WB.Worksheets(worksheetname)
+        self.WorkSheet = self.WorkBook.Worksheets(worksheetname)
 
         # Si le tableau est filtré, on affiche toutes les données 
         # pour éviter les problèmes d'ajout de ligne
-        if (self.WS.AutoFilterMode and self.WS.FilterMode) or self.WS.FilterMode : 
-            self.WS.ShowAllData()
+        if (self.WorkSheet.AutoFilterMode and self.WorkSheet.FilterMode) or self.WorkSheet.FilterMode : 
+            self.WorkSheet.ShowAllData()
         
         # On récupère la liste des lignes de la feuille de calcul Excel
         self.listRows = self.getlistRows()  # Traité par HTML_LBP
@@ -74,7 +74,7 @@ class Excel(ABC):
             with open(rep + acct + '.tablib', mode='r') as file:
                 self.tablib = json.loads(file.read())
         except FileNotFoundError:
-            self.tablib = []
+            self.tablib: list[list[str]]= []
         # Finalement, on retourne l'objet Excel initialisé
     
     #---------------------------------------------------------
@@ -91,7 +91,7 @@ class Excel(ABC):
         Args:
             delta_row (int): Le décalage (positif ou négatif)par rapport à la dernière ligne utilisée."""
         row = max(self.getLastRow()+delta_row, 1)
-        self.Appli.Goto(self.WS.Cells(row, 1)) 
+        self.Appli.Goto(self.WorkSheet.Cells(row, 1)) 
 
     def getStatus(self) -> int:
         """Retourne le statut du classeur Excel selon que le fichier était déjà ouvert, ouvert, ou nouveau."""
@@ -101,23 +101,23 @@ class Excel(ABC):
         """Retourne une chaîne de caractères représentant le statut du classeur Excel."""
         return ["DEJA OUVERT", "OUVERTURE", "NOUVEAU"][self.status] 
     
-    def saveWB(self) -> None:
+    def saveWorkBook(self) -> None:
         """Enregistre le classeur Excel selon son statut."""                        
         if self.status == Excel.NEW:
-            self.WB.SaveAs(self.nomfic)
+            self.WorkBook.SaveAs(self.nomfic)
         else:
-            self.WB.Save()
+            self.WorkBook.Save()
         
     def getRow(self, rownum:int) -> win32.CDispatch:  # Range Object
         """Retourne la ligne de la feuille de calcul Excel correspondant au numéro de ligne."""
-        return self.listRows(rownum).Range
+        return self.listRows(rownum).Range  #type: ignore
 
     def addRow(self) -> win32.CDispatch:    # Range object
         """Ajoute une ligne à la feuille de calcul Excel et retourne la plage de la nouvelle ligne."""
         ret = self.listRows.Add()
         return ret.Range
 
-    def getXLOpe(self, row) -> Ope:
+    def getXLOpe(self, row:int) -> Ope:
         """Retourne un objet Ope représentant l'opération bancaire dans la ligne Excel spécifiée."""                                                                  
         return self.XLOpe(self.getRow(row))
 
@@ -142,7 +142,7 @@ class Excel(ABC):
 
     @solde_initial.setter
     @abstractmethod
-    def solde_initial(self, value):
+    def solde_initial(self, value:float)
         ...                                                                                                                                                    
 
     

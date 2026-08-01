@@ -2,13 +2,14 @@
 import threading
 import queue
 import tkinter as tk
+from typing import Any
 from ReleveBanque.core.modgui import gui, gui_update            # GUI
 from ReleveBanque.core.application import Application           # Application
 from ReleveBanque.utils.geometry import Geometry
 
 # Queues
-gui_queue = queue.Queue()
-metier_queue = queue.Queue()
+gui_queue : queue.Queue[tuple[str, Any]]= queue.Queue()
+metier_queue : queue.Queue[tuple[str, Any]]= queue.Queue()
 
 class Lanceur:
     def __init__(self, f_Excel:type, f_HTML:type):

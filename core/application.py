@@ -5,6 +5,7 @@ import pythoncom
 import traceback
 from datetime import datetime
 from importlib import resources
+from typing import Any
 
 from ReleveBanque.utils import winmgt
 from ReleveBanque.utils.geometry import Geometry
@@ -13,7 +14,14 @@ from ReleveBanque.core.extraction_metier import ExtractionMetier
 class Application:
     """Module principal de l'application Moulinette."""
 
-    def __init__(self, mod_XL:type, mod_HTML:type, gui_queue:queue.Queue, metier_queue:queue.Queue, geo:Geometry):
+    def __init__(
+            self, 
+            mod_XL:type, 
+            mod_HTML:type, 
+            gui_queue:queue.Queue[tuple[str, Any]], 
+            metier_queue:queue.Queue[tuple[str, Any]], 
+            geo:Geometry
+        ):
         self.gui_queue = gui_queue            
         self.metier_queue = metier_queue
         self.mod_XL = mod_XL
@@ -43,11 +51,11 @@ class Application:
 
         return True
 
-    def load_exclusions(self):
+    def load_exclusions(self) -> str:
         excl = resources.files(self.mod_XL.__module__).joinpath("exclusions.txt").read_text()
         return excl
 
-    def putGUI(self, msg_type, payload):
+    def putGUI(self, msg_type:str, payload:Any):
         # réactions côté présentation
         if msg_type == "html_opened":
             pid = payload
