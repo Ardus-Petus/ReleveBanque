@@ -26,6 +26,7 @@ def getCurrentHwnd() -> int:
 # Positionnement et redimensionnement de la fenêtre
 # ---------------------------------------------------------
 def setWindowPos(hwnd: int, x: int, y: int, w: int, h: int) -> None:
+    restore(hwnd)
     win32gui.SetWindowPos(
         hwnd, win32con.HWND_TOP, 
         x, y, w, h, 

@@ -13,7 +13,6 @@ class Geometry:
         self.bordure = 0
 
     def pos_right(self, hwnd: int):
-        # winmgt.maximize(hwnd)
         winmgt.setWindowPos(
             hwnd=hwnd,
             x=self.mid_x + self.margin - self.bordure,
@@ -23,7 +22,6 @@ class Geometry:
         )
 
     def pos_left(self, hwnd:int):
-        # winmgt.maximize(hwnd)
         winmgt.setWindowPos(
             hwnd=hwnd,
             x=self.margin - self.bordure,

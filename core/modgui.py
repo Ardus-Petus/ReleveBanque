@@ -1,9 +1,10 @@
+import os
 import tkinter as tk
-from tkinter import ttk
 import tkinter.font as tkfont
+from tkinter import ttk
 import queue
-from ReleveBanque.utils import winmgt
 from ReleveBanque.utils.geometry import Geometry
+from ReleveBanque.utils import winmgt
 from typing import Any
 
 # ============================================================
@@ -40,10 +41,11 @@ class gui:
         self.voir_Excel:bool = False
         #root.tk.call('tk', 'scaling', 1.5)
         scaling = float(root.tk.call('tk', 'scaling'))
-        row_h = int(12 * scaling)   # 12 = hauteur "normale" de base
+        self.row_height = int(12 * scaling)   # 12 = hauteur "normale" de base
         #root.title("Extraction des opérations bancaires")
         root.title(__file__)
-        root.iconbitmap('moulinette.ico') #type: ignore
+        icon_path = os.path.join(os.path.dirname(__file__), 'moulinette.ico')
+        root.iconbitmap(icon_path) #type: ignore
         W = root.winfo_screenwidth()
         #H = root.winfo_screenheight()
         self.ratio = W/1920
@@ -105,7 +107,7 @@ class gui:
         # Tableau
         style = ttk.Style()
         style.theme_use("clam")
-        style.configure("MonStyle.Treeview", rowheight=row_h)
+        style.configure("MonStyle.Treeview", rowheight=self.row_height)
 
         bloc_tree = MLFrame(root, text="Opérations bancaires détectées")
      
@@ -172,9 +174,6 @@ class gui:
 # ============================================================
 
 def gui_update(g: gui, root: tk.Tk):
-    # entry = gui.dict_champs["Erreur"]
-    # entry.delete(0, 'end')
-    # entry.insert(0, root.geometry())
     try:
         while True:
             msg_type, payload = g.gui_queue.get_nowait()
@@ -210,5 +209,4 @@ def gui_update(g: gui, root: tk.Tk):
                     
     except queue.Empty:
         pass
-
-    root.after(100, gui_update, g, root) # On relance la procédure après 100 msec.
+    root.after(100, gui_update, g, root)
