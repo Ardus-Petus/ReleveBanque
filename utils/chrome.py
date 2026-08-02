@@ -88,3 +88,9 @@ class ChromeDriver():
 
     def findCells(self, row: WebElement) -> list[WebElement]:
         return row.find_elements(By.TAG_NAME, 'td')
+    
+if __name__ == "__main__":
+    url = "https://www.google.com"
+    chrome_driver: ChromeDriver = ChromeDriver(url)
+    chrome_driver.waitFor(url, 10)
+    print("Page loaded successfully.")
