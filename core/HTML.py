@@ -1,8 +1,5 @@
 import os
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from ReleveBanque.utils import chrome
 from ReleveBanque.core.Ope import Ope
 from abc import ABC, abstractmethod
@@ -10,7 +7,6 @@ from abc import ABC, abstractmethod
 os.environ['WDM_LOCAL'] = '0'
 os.environ['WDM_SSL_VERIFY'] = '0'
 
-BY_XPATH = By.XPATH
 
 class HTML(ABC):
     def __init__(self, url:str=''):
@@ -25,22 +21,17 @@ class HTML(ABC):
         self.proc.terminate()
         self.proc.wait()
 
-    def WaitFor(self, url: str, delay: int) -> None:
-        """
-        Attend que l'URL corresponde à `url`, pendant `delay` secondes.
-        Interruption immédiate si stop_event est activé.
-        Retourne True si l'URL est atteinte, False si stop_event est activé.
-        """
-        WebDriverWait(self.driver, delay).until(EC.url_matches(url))
-
     def findElement(self, value: str) -> WebElement:
-        return self.driver.find_element(BY_XPATH, value)
-
+        return self.chrome.findElement(value)
+    
     def findElements(self, value: str) -> list[WebElement]:
-        return self.driver.find_elements(BY_XPATH, value)
+        return self.chrome.findElements(value)
 
     def findCells(self, row: WebElement) -> list[WebElement]:
-        return row.find_elements(BY_XPATH, './td')
+        return self.chrome.findCells(row)
+
+    def WaitFor(self, url: str, delay: int) -> None:
+        self.chrome.WaitFor(url, delay)
 
     @abstractmethod
     def waitForRelevé(self) -> None:                        # Initialise le tableau self.rows avec la liste des opérations,
