@@ -4,6 +4,11 @@ import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
 os.environ['WDM_LOCAL'] = '0'
 os.environ['WDM_SSL_VERIFY'] = '0'
 from webdriver_manager.chrome import ChromeDriverManager
@@ -72,3 +77,14 @@ class ChromeDriver():
             self.proc.terminate()
             raise e
         
+    def waitFor(self, url: str, delay: int) -> None:
+        WebDriverWait(self.driver, delay).until(EC.url_matches(url))
+
+    def findElement(self, value:str):
+        return self.driver.find_element(By.XPATH, value)
+
+    def findElements(self, value:str)-> list[WebElement]:
+        return self.driver.find_elements(By.XPATH, value)
+
+    def findCells(self, row: WebElement) -> list[WebElement]:
+        return row.find_elements(By.TAG_NAME, 'td')

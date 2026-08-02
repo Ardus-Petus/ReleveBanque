@@ -1,6 +1,6 @@
 import os
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.remote.webelement import WebElement
+
 from ReleveBanque.utils import chrome
 from ReleveBanque.core.Ope import Ope
 from abc import ABC, abstractmethod
@@ -10,10 +10,9 @@ os.environ['WDM_SSL_VERIFY'] = '0'
 
 class HTML(ABC):
     def __init__(self, url:str=''):
-        self.rows = None    # Liste des lignes du tableau HTML
-        obj = chrome.ChromeDriver(url)
-        self.proc = obj.proc
-        self.driver = obj.driver
+        self.rows: list[WebElement] = []    # Liste des lignes du tableau HTML
+        self.chrome = chrome.ChromeDriver(url)
+        self.proc = self.chrome.proc
             
     def quit(self) -> None:
         """Ferme proprement Selenium et le processus Chrome associé."""
@@ -21,16 +20,19 @@ class HTML(ABC):
         self.proc.terminate()
         self.proc.wait()
 
+    def waitFor(self, url:str, delay:int=10) -> None:
+        """Attends que l'URL du navigateur corresponde à l'URL spécifiée."""
+        self.chrome.waitFor(url, delay)
+
+    def findElement(self, value: str) -> WebElement:
+        return self.chrome.findElement(value)
+
+    def findElements(self, value: str) -> list[WebElement]:
+        return self.chrome.findElements(value)
+
+    def findCells(self, row: WebElement) -> list[WebElement]:
+        return self.chrome.findCells(row)
     
-    def WaitFor(self, url: str, delay: int) -> None:
-        """
-        Attend que l'URL corresponde à `url`, pendant `delay` secondes.
-        Interruption immédiate si stop_event est activé.
-        Retourne True si l'URL est atteinte, False si stop_event est activé.
-        """
-
-        WebDriverWait(self.driver, delay).until(EC.url_matches(url))
-
     # Méthodes qui doivent être implémentées dans une classe dérivée
     @abstractmethod
     def waitForCnxComptes(self) -> None:
