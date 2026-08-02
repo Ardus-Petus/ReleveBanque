@@ -4,6 +4,7 @@ import os.path
 from ReleveBanque.utils.ExcelWindowManager import ExcelWindowManager
 from ReleveBanque.core.Ope import Ope
 from abc import ABC, abstractmethod
+from decimal import Decimal
 
 class TablibError(Exception):
     pass
@@ -51,6 +52,7 @@ class Excel(ABC):
                 self.status = Excel.NEW
 
         # On active le classeur et on récupère le handle de la fenêtre Excel
+        assert self.WorkBook is not None
         self.WorkBook.Activate()
         # self.hwnd = find_hwnd_by_workbook_name(WorkBookname)  
 
@@ -63,6 +65,7 @@ class Excel(ABC):
 
         # Si le tableau est filtré, on affiche toutes les données 
         # pour éviter les problèmes d'ajout de ligne
+        assert self.WorkSheet is not None
         if (self.WorkSheet.AutoFilterMode and self.WorkSheet.FilterMode) or self.WorkSheet.FilterMode : 
             self.WorkSheet.ShowAllData()
         
@@ -91,7 +94,7 @@ class Excel(ABC):
         Args:
             delta_row (int): Le décalage (positif ou négatif)par rapport à la dernière ligne utilisée."""
         row = max(self.getLastRow()+delta_row, 1)
-        self.Appli.Goto(self.WorkSheet.Cells(row, 1)) 
+        self.Appli.Goto(self.WorkSheet.Cells(row, 1)) #type: ignore # Se positionne sur la ligne pour la rendre visible 
 
     def getStatus(self) -> int:
         """Retourne le statut du classeur Excel selon que le fichier était déjà ouvert, ouvert, ou nouveau."""
@@ -104,9 +107,9 @@ class Excel(ABC):
     def saveWorkBook(self) -> None:
         """Enregistre le classeur Excel selon son statut."""                        
         if self.status == Excel.NEW:
-            self.WorkBook.SaveAs(self.nomfic)
+            self.WorkBook.SaveAs(self.nomfic) #type: ignore
         else:
-            self.WorkBook.Save()
+            self.WorkBook.Save() #type: ignore
         
     def getRow(self, rownum:int) -> win32.CDispatch:  # Range Object
         """Retourne la ligne de la feuille de calcul Excel correspondant au numéro de ligne."""
@@ -137,12 +140,12 @@ class Excel(ABC):
 
     @property
     @abstractmethod
-    def solde_initial(self) -> float:
+    def solde_initial(self) -> Decimal:
         ...
 
     @solde_initial.setter
     @abstractmethod
-    def solde_initial(self, value:float)
+    def solde_initial(self, value:Decimal):
         ...                                                                                                                                                    
 
     

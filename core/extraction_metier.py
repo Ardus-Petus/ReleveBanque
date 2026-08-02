@@ -4,7 +4,7 @@ import locale
 from typing import Type, Any, Callable
 from ReleveBanque.core.Excel import Excel
 from ReleveBanque.core.HTML import HTML
-from Ope import Ope
+from ReleveBanque.core.Ope import Ope
 
 class ManqueHistorique(Exception):
     pass
@@ -17,7 +17,7 @@ class ExtractionMetier:
         self.oHTML = None
         self.oXL = None
 
-    def run(self, callback: Callable[[str, Any], None]=lambda _, _: None):
+    def run(self, callback: Callable[[str, Any], None]=lambda x, y: None):
         def _cb(msgtype:str, value:Any):
             callback(msgtype, value)
         def _tr(msg:str):
@@ -113,7 +113,7 @@ class ExtractionMetier:
         if nb_ope:
             if oXL.status == oXL.NEW:
                 oXL.solde_initial = soldeHTML - tot_ope - tot_excl
-            oXL.saveWB()
+            oXL.saveWorkBook()
 
         _cb(
                 "log",

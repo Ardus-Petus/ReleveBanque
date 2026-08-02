@@ -1,9 +1,10 @@
-import os
 import tkinter as tk
 from tkinter import ttk
 import tkinter.font as tkfont
 import queue
 from ReleveBanque.utils import winmgt
+from ReleveBanque.utils.geometry import Geometry
+from typing import Any
 
 # ============================================================
 # GUI
@@ -13,7 +14,7 @@ GREY = "#B5B5B5"
 
 class MLFrame(tk.Frame):
 
-    def __init__(self, parent, text, label_bg=GREY):
+    def __init__(self, parent: tk.Widget|tk.Tk, text: str, label_bg: str = GREY):
         super().__init__(parent, bd=3, relief="groove")
         fontBold = tkfont.nametofont('TkDefaultFont').copy()
         fontBold.configure(weight='bold')
@@ -24,7 +25,12 @@ class MLFrame(tk.Frame):
         self.content.pack(fill="both", expand=True)
 
 class gui:
-    def __init__(self, root:tk.Tk, gui_queue, metier_queue, geo):
+    def __init__(
+            self, 
+            root:tk.Tk, 
+            gui_queue: queue.Queue[tuple[str, Any]], 
+            metier_queue: queue.Queue[tuple[str, Any]], 
+            geo: Geometry):
         self.root=root
         self.geometry = geo
         self.metier_queue = metier_queue
@@ -37,9 +43,9 @@ class gui:
         row_h = int(12 * scaling)   # 12 = hauteur "normale" de base
         #root.title("Extraction des opérations bancaires")
         root.title(__file__)
-        if os.path.exists('moulinette.ico'): root.iconbitmap('moulinette.ico')
+        root.iconbitmap('moulinette.ico') #type: ignore
         W = root.winfo_screenwidth()
-        H = root.winfo_screenheight()
+        #H = root.winfo_screenheight()
         self.ratio = W/1920
         root.geometry('1000x1000+500+500')
         fontBold = tkfont.nametofont('TkDefaultFont').copy()
@@ -74,7 +80,7 @@ class gui:
         }
         nbcol = len(self.champs)-2
         r=0
-        self.dict_champs = {}                   # dictionnaire des champs réutilisé dans gui_update
+        self.dict_champs:dict[str, tk.Entry] = {}                  # dictionnaire des champs réutilisé dans gui_update
         for i, champ in enumerate(self.champs):
             frame = tk.Frame(frame_val)
 
@@ -85,7 +91,7 @@ class gui:
             field.pack(expand=True, side='left', fill='x', anchor='w', padx=5, pady=2)
             field.configure(justify='center')
 
-            self.dict_champs[champ]=field       # initialisation du dictionnaire dict_champs
+            self.dict_champs[champ] = field       # initialisation du dictionnaire dict_champs
             if i < nbcol:
                 frame.grid(row=r, column=i, padx=5, pady=5)
             else:
@@ -117,7 +123,7 @@ class gui:
             style="MonStyle.Treeview",
         )
 
-        for name, text, percent, min_width, stretch, anchor in self.columns:
+        for name, text, _, min_width, stretch, anchor in self.columns:
             self.tree.heading(name, text=text)
             self.tree.column(name, width=min_width, stretch=stretch, anchor=anchor) # pyright: ignore[reportArgumentType]
 
@@ -149,10 +155,10 @@ class gui:
         bloc_buttons.grid(  row=3, column=0, sticky='ew',   padx=10, pady=10)
 
 
-    def resize_columns(self, event) -> None:
+    def resize_columns(self, event: tk.Event) -> None:
         width_total = event.width
         for row in self.columns:
-            name, text, percent, min_width, stretch, anchor = row
+            name, _, percent, min_width, _, _ = row
             self.tree.column(name, width=max(int(width_total * percent), min_width))
     
     def close(self) -> None:

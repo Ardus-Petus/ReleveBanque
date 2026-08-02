@@ -46,7 +46,7 @@ def close_window(hwnd: int) -> None:
 def getChromeWindowFromPid(pid: int) -> int:
     hwnds:list[int] = []
 
-    def callback(hwnd: int, _):
+    def callback(hwnd: int, _)-> bool:
         # Vérifie le PID
         _, found_pid = win32process.GetWindowThreadProcessId(hwnd)
         if found_pid != pid:
@@ -66,7 +66,7 @@ def getChromeWindowFromPid(pid: int) -> int:
 
     # Chrome peut mettre longtemps à afficher sa fenêtre
     for _ in range(60):  # 6 secondes
-        win32gui.EnumWindows(callback, None)
+        win32gui.EnumWindows(callback, None) #type: ignore
         if hwnds:
             break
         time.sleep(0.1)
